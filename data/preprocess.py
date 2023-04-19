@@ -12,7 +12,7 @@ we recommend to set data_name='adni' with slight modification on the image clipp
 Note: it is tedious to tune the transformation of the surface to match the volume
 for a new dataset, but the matching is important to make everything work.
 """
-"salut alex ="
+
 
 import numpy as np
 
