@@ -52,6 +52,35 @@ class Unet(nn.Module):
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
         x = F.leaky_relu(self.conv5(x4), 0.2)
 
+#pad x with zeros to match the number of features in x4
+        x = F.pad(x, (0, 1), mode='constant', value=0)
+        x = self.up(x)
+    
+        x = F.interpolate(x, size=x4.size()[2:], mode='nearest')
+        x = torch.cat([x, x4], dim=1)
+        x = F.leaky_relu(self.deconv4(x), 0.2)
+        x = self.up(x)
+    
+        x = F.interpolate(x, size=x3.size()[2:], mode='nearest')
+        x = torch.cat([x, x3], dim=1)
+        x = F.leaky_relu(self.deconv3(x), 0.2)
+        x = self.up(x)
+    
+        x = F.interpolate(x, size=x2.size()[2:], mode='nearest')
+        x = torch.cat([x, x2], dim=1)
+        x = F.leaky_relu(self.deconv2(x), 0.2)
+        x = self.up(x)
+    
+        x = F.interpolate(x, size=x1.size()[2:], mode='nearest')
+        x = torch.cat([x, x1], dim=1)
+        x = F.leaky_relu(self.deconv1(x), 0.2)
+
+        x = F.leaky_relu(self.lastconv1(x), 0.2)
+        x = self.lastconv2(x)
+    
+        return x
+"""
+
 # pad x with zeros to match the number of features in x4
         x = F.pad(x,(0, 1), mode='constant', value=0)
         x = self.up(x)
@@ -80,7 +109,7 @@ class Unet(nn.Module):
         x = self.lastconv2(x)
 
         return x
-
+"""
    
     #def forward(self, x):
 
