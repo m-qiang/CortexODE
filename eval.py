@@ -198,10 +198,10 @@ if __name__ == '__main__':
         # ------- save predictde surfaces ------- 
         if test_type == 'pred':
             ### save mesh to .obj or .stl format by Trimesh
-            # mesh_wm = trimesh.Trimesh(v_wm_pred, f_wm_pred)
-            # mesh_gm = trimesh.Trimesh(v_gm_pred, f_gm_pred)
-            # mesh_wm.export(result_dir+'wm_'+data_name+'_'+surf_hemi+'_'+subid+'.stl')
-            # mesh_gm.export(result_dir+'gm_'+data_name+'_'+surf_hemi+'_'+subid+'.obj')
+            mesh_wm = trimesh.Trimesh(v_wm_pred, f_wm_pred)
+            mesh_gm = trimesh.Trimesh(v_gm_pred, f_gm_pred)
+            mesh_wm.export(result_dir+'wm_'+data_name+'_'+surf_hemi+'_'+subid+'.stl')
+            mesh_gm.export(result_dir+'gm_'+data_name+'_'+surf_hemi+'_'+subid+'.obj')
 
             # save the surfaces in FreeSurfer format
             nib.freesurfer.io.write_geometry(result_dir+data_name+'_'+surf_hemi+'_'+subid+'.white',
@@ -253,10 +253,10 @@ if __name__ == '__main__':
             assd_wm, hd_wm = compute_mesh_distance(v_wm_pred, v_wm_gt, f_wm_pred, f_wm_gt)
             assd_gm, hd_gm = compute_mesh_distance(v_gm_pred, v_gm_gt, f_gm_pred, f_gm_gt)
             if data_name == 'dhcp':  # the resolution is 0.7
-                assd_wm = 0.7*assd_wm
-                assd_gm = 0.7*assd_gm
-                hd_wm = 0.7*hd_wm
-                hd_gm = 0.7*hd_gm
+                assd_wm = 0.5*assd_wm
+                assd_gm = 0.5*assd_gm
+                hd_wm = 0.5*hd_wm
+                hd_gm = 0.5*hd_gm
             assd_wm_all.append(assd_wm)
             assd_gm_all.append(assd_gm)
             hd_wm_all.append(hd_wm)
