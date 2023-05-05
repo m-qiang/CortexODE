@@ -29,7 +29,7 @@ def process_volume(x, data_name='hcp'):
         x = x[:,:,::-1]
         return x[None, 40:-40, 24:-24, 40:-40].copy()
     elif data_name == 'dhcp':
-        x = np.pad(x, (((2,2),(38,38),(41,41)), 'constant', constant_values=0)
+        x = np.pad(x, (((2,2),(38,38),(41,41))), 'constant', constant_values=0)
         return x[None].copy()
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
