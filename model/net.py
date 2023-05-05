@@ -54,30 +54,33 @@ class Unet(nn.Module):
 
 
         x = self.up(x)
+        x = x.squeeze(0)
         x = F.interpolate(x, size=x4.size()[2:], mode='bilinear', align_corners=False)
-        x = torch.cat([x, x4], dim=1)
+        x = torch.cat([x.unsqueeze(0), x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
 
         x = self.up(x)
+        x = x.squeeze(0)
         x = F.interpolate(x, size=x3.size()[2:], mode='bilinear', align_corners=False)
-        x = torch.cat([x, x3], dim=1)
+        x = torch.cat([x.unsqueeze(0), x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
 
         x = self.up(x)
+        x = x.squeeze(0)
         x = F.interpolate(x, size=x2.size()[2:], mode='bilinear', align_corners=False)
-        x = torch.cat([x, x2], dim=1)
+        x = torch.cat([x.unsqueeze(0), x2], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
 
         x = self.up(x)
+        x = x.squeeze(0)
         x = F.interpolate(x, size=x1.size()[2:], mode='bilinear', align_corners=False)
-        x = torch.cat([x, x1], dim=1)
+        x = torch.cat([x.unsqueeze(0), x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
-
+        
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
 
         return x
-
 
 """
 
