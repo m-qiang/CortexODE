@@ -33,16 +33,22 @@ class Unet(nn.Module):
                                    stride=1, padding=1)
         self.lastconv2 = nn.Conv3d(in_channels=16, out_channels=c_out, kernel_size=3,
                                    stride=1, padding=1)
-        self.up = nn.Upsample(scale_factor=2, mode='trilinear')
-        
+        self.up = nn.Upsample(scale_factor=2, mode='trilinear')	
+
+	
+
     def forward(self, x):
+        
 
         x1 = F.leaky_relu(self.conv1(x), 0.2)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        x  = F.leaky_relu(self.conv5(x4), 0.2)
-        x  = self.up(x)
+        x = F.leaky_relu(self.conv5(x4), 0.2)
+
+    # pad x with zeros to match the number of features in x4
+        x = F.pad(x, (0, 1), mode='constant', value=0)
+        x = self.up(x)
         
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
@@ -61,8 +67,40 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-
+        
         return x
+
+
+ 
+        
+    #def forward(self, x):
+
+        #x1 = F.leaky_relu(self.conv1(x), 0.2)
+        #x2 = F.leaky_relu(self.conv2(x1), 0.2)
+        #x3 = F.leaky_relu(self.conv3(x2), 0.2)
+        #x4 = F.leaky_relu(self.conv4(x3), 0.2)
+        #x  = F.leaky_relu(self.conv5(x4), 0.2)
+        #x  = self.up(x)
+        
+        #x = torch.cat([x, x4], dim=1)
+        #x = F.leaky_relu(self.deconv4(x), 0.2)
+        #x = self.up(x)
+        
+        #x = torch.cat([x, x3], dim=1)
+        #x = F.leaky_relu(self.deconv3(x), 0.2)
+        #x = self.up(x)
+        
+        #x = torch.cat([x, x2], dim=1)
+        #x = F.leaky_relu(self.deconv2(x), 0.2)
+        #x = self.up(x)
+        
+        #x = torch.cat([x, x1], dim=1)
+        #x = F.leaky_relu(self.deconv1(x), 0.2)
+
+        #x = F.leaky_relu(self.lastconv1(x), 0.2)
+        #x = self.lastconv2(x)
+
+        #return x
 
 
 class CortexODE(nn.Module):
