@@ -53,8 +53,11 @@ class Unet(nn.Module):
         x = F.leaky_relu(self.conv5(x4), 0.2)
 
 #pad x with zeros to match the number of features in x4
-        x = F.pad(x, (0, 1), mode='constant', value=0)
+        padding = (0, 0, 0, 0, 0, x4.size()[1]-x.size()[1], 0, 0)
+        x = F.pad(x, padding, mode='constant', value=0)
         x = self.up(x)
+        #x = F.pad(x, (0, 1), mode='constant', value=0)
+        #x = self.up(x)
     
         x = F.interpolate(x, size=x4.size()[2:], mode='nearest')
         x = torch.cat([x, x4], dim=1)
