@@ -55,12 +55,12 @@ class Unet(nn.Module):
         x = F.pad(x, (0, 1), mode='constant', value=0)
         x = self.up(x)
     
-        x = F.interpolate(x, size=x4.size()[2:], mode='trilinear', align_corners=False)
+        #x = F.interpolate(x, size=x4.size()[2:], mode='trilinear', align_corners=False)
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
     
-        x = F.interpolate(x, size=x3.size()[2:], mode='trilinear', align_corners=False)
+        #x = F.interpolate(x, size=x3.size()[2:], mode='trilinear', align_corners=False)
         x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
         x = self.up(x)
@@ -70,7 +70,7 @@ class Unet(nn.Module):
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
     
-        x = F.interpolate(x, size=x1.size()[2:], mode='trilinear', align_corners=False)
+        #x = F.interpolate(x, size=x1.size()[2:], mode='trilinear', align_corners=False)
         x = torch.cat([x, x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
