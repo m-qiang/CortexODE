@@ -29,8 +29,13 @@ def process_volume(x, data_name='hcp'):
         x = x[:,:,::-1]
         return x[None, 40:-40, 24:-24, 40:-40].copy()
     elif data_name == 'dhcp':
-        x = np.pad(x, (((2,2),(38,38),(41,41))), 'constant', constant_values=0)
-        return x[None].copy()
+        resolution=0.5
+        voxel_size = 1.0 / resolution
+        padding = int(32 / voxel_size)
+        clipping = int(128 / voxel_size)
+        x = np.pad(x, ((padding,padding),(0,0),(0,0)), 'constant', constant_values=0)
+        x = x[None, clipping:-clipping, :, :].copy()
+        return x
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
 
@@ -56,10 +61,15 @@ def process_surface(v, f, data_name='hcp'):
         v = v + 128
         v = (v - [88, 104, 88]) / 104
     elif data_name == 'dhcp':
+        resolution=0.5
+        voxel_size = 1.0 / resolution
+        clipping = int(128 / voxel_size)
+
         v = v[:,[2,1,0]].copy()
         f = f[:,[2,1,0]].copy()
         # normalize to [-1, 1]
-        v = (v - [108, 108, 80]) / 108
+        v = (v - [108.5, 144.5, 108.5]) / clipping
+    
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
 
