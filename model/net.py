@@ -50,19 +50,24 @@ class Unet(nn.Module):
         
         print("Taille du tenseur x1: " ,x1.size())
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
-        print("Taille du tenseur x1: " ,x2.size())
+        print("Taille du tenseur x2: " ,x2.size())
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
-        print("Taille du tenseur x1: " ,x3.size())
+        print("Taille du tenseur x3: " ,x3.size())
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        print("Taille du tenseur x1: " ,x4.size())
+        print("Taille du tenseur x4: " ,x4.size())
         x = F.leaky_relu(self.conv5(x4), 0.2)
-        print("Taille du tenseur x1: " ,x.size())
+        print("Taille du tenseur x: " ,x.size())
         
         x1 = F.leaky_relu(self.conv1(x), 0.2)
+        print("Taille du tenseur  conv1 :x1: " ,x1.size())
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
+        print("Taille du tenseur  conv2 x2: " ,x1.size())
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
+        print("Taille du tenseur conv 3 x3: " ,x1.size())
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
+        print("Taille du tenseur conv 4 :x4 : " ,x1.size())
         x  = F.leaky_relu(self.conv5(x4), 0.2)
+        print("Taille du tenseur conv 5 x: " ,x1.size())
         x  = self.up(x)
         
         x = torch.cat([x, x4], dim=1)
@@ -82,7 +87,7 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-        print("Taille du tenseur x1: " ,x.size())
+        print("Taille du tenseur x final: " ,x.size())
 
         return x
 """
