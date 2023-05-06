@@ -34,7 +34,7 @@ def process_volume(x, data_name='hcp'):
         padding = int(32 / voxel_size)
         clipping = int(128 / voxel_size)
         x = np.pad(x, ((padding,padding),(0,0),(0,0)), 'constant', constant_values=0)
-        x = x[None, clipping:-clipping, :, :].copy()
+        x = x[None].copy()
         return x
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
