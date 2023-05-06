@@ -47,10 +47,16 @@ class Unet(nn.Module):
         
 
         x1 = F.leaky_relu(self.conv1(x), 0.2)
+        
+        print("Taille du tenseur x1: " ,x1.size())
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
+        print("Taille du tenseur x1: " ,x2.size())
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
+        print("Taille du tenseur x1: " ,x3.size())
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
+        print("Taille du tenseur x1: " ,x4.size())
         x = F.leaky_relu(self.conv5(x4), 0.2)
+        print("Taille du tenseur x1: " ,x.size())
         
         x1 = F.leaky_relu(self.conv1(x), 0.2)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
@@ -76,6 +82,7 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
+        print("Taille du tenseur x1: " ,x.size())
 
         return x
 """
