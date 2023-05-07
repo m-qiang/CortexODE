@@ -91,4 +91,4 @@ def process_surface_inverse(v, f, data_name='hcp'):
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
 
-    return v, 
+    return v, f
