@@ -73,7 +73,7 @@ class Unet(nn.Module):
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
-        
+    
         x3 = F.interpolate(x3, size=x.size()[2:], mode='trilinear', align_corners=True)
         x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
@@ -90,8 +90,8 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-    
-        return x 
+
+        return x
 
 class CortexODE(nn.Module):
     """
