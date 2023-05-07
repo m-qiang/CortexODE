@@ -37,26 +37,70 @@ class Unet(nn.Module):
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
     
     def forward(self, x):
+
         x1 = F.leaky_relu(self.conv1(x), 0.2)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        x5 = F.leaky_relu(self.conv5(x4), 0.2)
-        x = self.up(x5)
+        x  = F.leaky_relu(self.conv5(x4), 0.2)
+        x  = self.up(x)
+
+    # Check the shapes of the tensors before concatenation
+        print('x shape:', x.shape)
+        print('x4 shape:', x4.shape)
+
+    # Resize x4 to have the same size as x in dimension 2
+        x4 = F.interpolate(x4, size=x.shape[2], mode='nearest')
+
+    # Concatenate x and x4 tensors
         x = torch.cat([x, x4], dim=1)
+
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
+
+    # Check the shapes of the tensors before concatenation
+        print('x shape:', x.shape)
+        print('x3 shape:', x3.shape)
+
+    # Resize x3 to have the same size as x in dimension 2
+        x3 = F.interpolate(x3, size=x.shape[2], mode='nearest')
+
+    # Concatenate x and x3 tensors
         x = torch.cat([x, x3], dim=1)
+
         x = F.leaky_relu(self.deconv3(x), 0.2)
         x = self.up(x)
+
+    # Check the shapes of the tensors before concatenation
+        print('x shape:', x.shape)
+        print('x2 shape:', x2.shape)
+
+    # Resize x2 to have the same size as x in dimension 2
+        x2 = F.interpolate(x2, size=x.shape[2], mode='nearest')
+
+    # Concatenate x and x2 tensors
         x = torch.cat([x, x2], dim=1)
+
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
+
+    # Check the shapes of the tensors before concatenation
+        print('x shape:', x.shape)
+        print('x1 shape:', x1.shape)
+
+    # Resize x1 to have the same size as x in dimension 2
+        x1 = F.interpolate(x1, size=x.shape[2], mode='nearest')
+
+    # Concatenate x and x1 tensors
         x = torch.cat([x, x1], dim=1)
+
         x = F.leaky_relu(self.deconv1(x), 0.2)
+
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
+
         return x
+
 
 
 
