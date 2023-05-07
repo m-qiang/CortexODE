@@ -48,7 +48,7 @@ class Unet(nn.Module):
         x  = F.leaky_relu(self.conv5(x4), 0.2)
         print("Taille du tenseur x: ", x.size())
         x  = self.up(x)
-        """
+        
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
@@ -92,7 +92,7 @@ class Unet(nn.Module):
         x = self.lastconv2(x)
 
         return x
-
+"""
 class CortexODE(nn.Module):
     """
     The deformation network of CortexODE model.
