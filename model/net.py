@@ -38,36 +38,26 @@ class Unet(nn.Module):
     
     def forward(self, x):
         x1 = F.leaky_relu(self.conv1(x), 0.2)
-        print("Taille du tenseur x1: ", x1.size())
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
-        print("Taille du tenseur x2: ", x2.size())
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
-        print("Taille du tenseur x3: ", x3.size())
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        print("Taille du tenseur x4: ", x4.size())
-        x  = F.leaky_relu(self.conv5(x4), 0.2)
-        print("Taille du tenseur x: ", x.size())
-        x  = self.up(x)
-    
-        x = torch.cat([x, x4], dim=2)
+        x5 = F.leaky_relu(self.conv5(x4), 0.2)
+        x = self.up(x5)
+        x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
-        
-        x = torch.cat([x, x3], dim=2)
+        x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
         x = self.up(x)
-    
-        x = torch.cat([x, x2], dim=2)
+        x = torch.cat([x, x2], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
-    
-        x = torch.cat([x, x1], dim=2)
+        x = torch.cat([x, x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
-
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-            
         return x
+
 
 
 
