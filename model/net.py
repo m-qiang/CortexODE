@@ -60,14 +60,15 @@ class Unet(nn.Module):
         x = torch.cat([x, x2], dim=2)
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
-        
+    
         x = torch.cat([x, x1], dim=2)
         x = F.leaky_relu(self.deconv1(x), 0.2)
-        
+
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
 
         return x
+
 
 """  
     def forward(self, x):
