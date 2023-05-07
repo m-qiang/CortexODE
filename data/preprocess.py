@@ -27,14 +27,7 @@ def process_volume(x, data_name='hcp'):
         return x[None, 40:-40, 24:-24, 40:-40].copy()
     elif data_name == 'dhcp':
         x = np.pad(x, ((2,2),(0,0),(0,0)), 'constant', constant_values=0)
-        # clip the image
-        x = x[None, 50:-50, 50:-50, 50:-50].copy()
-        # normalize to [-1, 1]
-        x = (x - 128) / 128
-        return x.copy()
-        
-        #x = np.pad(x, ((2,2),(0,0),(0,0)), 'constant', constant_values=0)
-        #return x[None].copy()
+        return x[None].copy()
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
 
@@ -63,8 +56,7 @@ def process_surface(v, f, data_name='hcp'):
         v = v[:,[2,1,0]].copy()
         f = f[:,[2,1,0]].copy()
         # normalize to [-1, 1]
-        v = (v - [88, 104, 88]) / 104
-        
+        v = (v - [104, 104, 78]) / 104
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
 
@@ -95,8 +87,8 @@ def process_surface_inverse(v, f, data_name='hcp'):
     elif data_name == 'dhcp':
         v = v * 104 + [104, 104, 78]
         v = v[:,[2,1,0]].copy()
-        f = f[:,[2,1,0]].copy()         
+        f = f[:,[2,1,0]].copy()        
     else:
         raise ValueError("data_name should be in ['hcp','adni','dhcp']")
 
-    return v, f
+    return v, 
