@@ -49,8 +49,8 @@ class Unet(nn.Module):
         print('x shape:', x.shape)
         print('x4 shape:', x4.shape)
 
-    # Resize x4 to have the same size as x in dimension 2
-        x4 = F.interpolate(x4, size=x.shape[2], mode='nearest')
+    # Resize x4 to have the same number of channels as x
+        x4 = F.interpolate(x4, size=x.shape[2:], mode='nearest')
 
     # Concatenate x and x4 tensors
         x = torch.cat([x, x4], dim=1)
@@ -62,8 +62,8 @@ class Unet(nn.Module):
         print('x shape:', x.shape)
         print('x3 shape:', x3.shape)
 
-    # Resize x3 to have the same size as x in dimension 2
-        x3 = F.interpolate(x3, size=x.shape[2], mode='nearest')
+    # Resize x3 to have the same number of channels as x
+        x3 = F.interpolate(x3, size=x.shape[2:], mode='nearest')
 
     # Concatenate x and x3 tensors
         x = torch.cat([x, x3], dim=1)
@@ -74,9 +74,9 @@ class Unet(nn.Module):
     # Check the shapes of the tensors before concatenation
         print('x shape:', x.shape)
         print('x2 shape:', x2.shape)
-
-    # Resize x2 to have the same size as x in dimension 2
-        x2 = F.interpolate(x2, size=x.shape[2], mode='nearest')
+    
+    # Resize x2 to have the same number of channels as x
+        x2 = F.interpolate(x2, size=x.shape[2:], mode='nearest')
 
     # Concatenate x and x2 tensors
         x = torch.cat([x, x2], dim=1)
@@ -88,8 +88,8 @@ class Unet(nn.Module):
         print('x shape:', x.shape)
         print('x1 shape:', x1.shape)
 
-    # Resize x1 to have the same size as x in dimension 2
-        x1 = F.interpolate(x1, size=x.shape[2], mode='nearest')
+    # Resize x1 to have the same number of channels as x
+        x1 = F.interpolate(x1, size=x.shape[2:], mode='nearest')
 
     # Concatenate x and x1 tensors
         x = torch.cat([x, x1], dim=1)
@@ -98,8 +98,9 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-
+            
         return x
+
 
 
 
