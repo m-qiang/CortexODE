@@ -37,7 +37,6 @@ class Unet(nn.Module):
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
     
     def forward(self, x):
-
         x1 = F.leaky_relu(self.conv1(x), 0.2)
         print("Taille du tenseur x1: ", x1.size())
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
@@ -67,8 +66,9 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-
+            
         return x
+
 
 
 """ 
