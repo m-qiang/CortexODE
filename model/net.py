@@ -35,7 +35,8 @@ class Unet(nn.Module):
         self.lastconv2 = nn.Conv3d(in_channels=16, out_channels=c_out, kernel_size=3,
                                    stride=1, padding=1)
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
-    
+        
+        """
     def forward(self, x):
 
         x1 = F.leaky_relu(self.conv1(x), 0.2)
@@ -106,7 +107,7 @@ class Unet(nn.Module):
 
 
 
-""" 
+   """ 
 
  
     def forward(self, x):
@@ -166,7 +167,7 @@ class Unet(nn.Module):
         x = self.lastconv2(x)
 
         return x
-"""
+
 class CortexODE(nn.Module):
     """
     The deformation network of CortexODE model.
