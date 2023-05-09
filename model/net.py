@@ -37,10 +37,15 @@ class Unet(nn.Module):
         
     def forward(self, x):
         x1 = F.leaky_relu(self.conv1(x), 0.2)
+        print("taille x1 :",x1)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
+        print("taille x2 :",x2)
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
+        print("taille x3 :",x3)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
+        print("taille x4 :",x4)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
+        print("taille x :",x1)
         x  = self.up(x)
     
         x4_resized = F.interpolate(x4, size=x3.size()[2:], mode='nearest')
