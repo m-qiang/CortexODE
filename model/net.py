@@ -44,31 +44,32 @@ class Unet(nn.Module):
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
         print("taille x3",x3.shape)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        print("taille x4",x4.size)
+        print("taille x4",x4.shape)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
         print("taille x",x.shape)
-        x  = self.up(x)
+        x  = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
         print("taille x up ",x.shape)
         
-        x = torch.cat([x, x4], dim=1)
+        x = torch.cat([x, F.interpolate(x4, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
-        x = self.up(x)
+        x = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
         
-        x = torch.cat([x, x3], dim=1)
+        x = torch.cat([x, F.interpolate(x3, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
-        x = self.up(x)
-        
-        x = torch.cat([x, x2], dim=1)
+        x = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
+    
+        x = torch.cat([x, F.interpolate(x2, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
-        x = self.up(x)
-        
-        x = torch.cat([x, x1], dim=1)
+        x = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
+    
+        x = torch.cat([x, F.interpolate(x1, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
 
         return x
+
 
 
 class CortexODE(nn.Module):
