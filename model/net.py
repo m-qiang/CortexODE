@@ -7,10 +7,10 @@ import numpy as np
  
 
 class Unet(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, c_in=1, c_out=2):
         super(Unet, self).__init__()
 
-        self.conv1 = nn.Conv3d(in_channels, 16, kernel_size=3, padding=1)
+        self.conv1 = nn.Conv3d(c_in, 16, kernel_size=3, padding=1)
         self.conv2 = nn.Conv3d(16, 32, kernel_size=3, padding=1)
         self.conv3 = nn.Conv3d(32, 64, kernel_size=3, padding=1)
         self.conv4 = nn.Conv3d(64, 128, kernel_size=3, padding=1)
@@ -21,7 +21,7 @@ class Unet(nn.Module):
         self.deconv2 = nn.Conv3d(96, 32, kernel_size=3, padding=1)
         self.deconv1 = nn.Conv3d(48, 16, kernel_size=3, padding=1)
         self.lastconv1 = nn.Conv3d(16, 16, kernel_size=3, padding=1)
-        self.lastconv2 = nn.Conv3d(16, out_channels, kernel_size=1)
+        self.lastconv2 = nn.Conv3d(16, c_out, kernel_size=1)
 
         self.up = nn.Upsample(scale_factor=2, mode='trilinear', align_corners=True)
 
