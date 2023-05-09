@@ -36,35 +36,35 @@ class Unet(nn.Module):
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
         
     def forward(self, x):
+
         x1 = F.leaky_relu(self.conv1(x), 0.2)
-        print("taille x1 :",x1.shape)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
-        print("taille x2 :",x2.shape)
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
-        print("taille x3 :",x3.shape)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        print("taille x4 :",x4.shape)
-        x  = F.leaky_relu(self.conv5(x4), 0.2)
-        print("taille x :",x1.shape)
-        x  = self.up(x)
-    
-        x4_resized = F.interpolate(x4, size=x3.size()[2:], mode='nearest')
-        x = torch.cat([x, x4_resized], dim=1)
+        x = F.leaky_relu(self.conv5(x4), 0.2)
+        x = self.up(x)
+
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
+        x4 = F.interpolate(x4, scale_factor=2, mode='trilinear', align_corners=True)
+        x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
-    
-        x3_resized = F.interpolate(x3, size=x2.size()[2:], mode='nearest')
-        x = torch.cat([x, x3_resized], dim=1)
+
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
+        x3 = F.interpolate(x3, scale_factor=2, mode='trilinear', align_corners=True)
+        x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
-        x = self.up(x)
-    
-        x2_resized = F.interpolate(x2, size=x1.size()[2:], mode='nearest')
-        x = torch.cat([x, x2_resized], dim=1)
+        sx = self.up(x)
+
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
+        x2 = F.interpolate(x2, scale_factor=2, mode='trilinear', align_corners=True)
+        x = torch.cat([x, x2], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
-    
-        x1_resized = F.interpolate(x1, size=x.size()[2:], mode='nearest')
-        x = torch.cat([x, x1_resized], dim=1)
+
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
+        x1 = F.interpolate(x1, scale_factor=2, mode='trilinear', align_corners=True)
+        x = torch.cat([x, x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
