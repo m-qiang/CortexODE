@@ -6,9 +6,9 @@ import numpy as np
 
  
 
-class SegNet(nn.Module):
+class Unet(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(SegNet, self).__init__()
+        super(Unet, self).__init__()
 
         self.conv1 = nn.Conv3d(in_channels, 16, kernel_size=3, padding=1)
         self.conv2 = nn.Conv3d(16, 32, kernel_size=3, padding=1)
