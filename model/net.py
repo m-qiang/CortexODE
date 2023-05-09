@@ -43,28 +43,30 @@ class Unet(nn.Module):
         x  = F.leaky_relu(self.conv5(x4), 0.2)
         x  = self.up(x)
     
-        x = torch.cat([x, x4], dim=1)
+        x4_resized = F.interpolate(x4, size=x3.size()[2:], mode='nearest')
+        x = torch.cat([x, x4_resized], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
     
-        x3_pad = F.pad(x3, (0, 0, 0, 0, x.shape[2]-x3.shape[2], 0))
-        x = torch.cat([x, x3_pad], dim=1)
+        x3_resized = F.interpolate(x3, size=x2.size()[2:], mode='nearest')
+        x = torch.cat([x, x3_resized], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
         x = self.up(x)
     
-        x2_pad = F.pad(x2, (0, 0, 0, 0, x.shape[2]-x2.shape[2], 0))
-        x = torch.cat([x, x2_pad], dim=1)
+        x2_resized = F.interpolate(x2, size=x1.size()[2:], mode='nearest')
+        x = torch.cat([x, x2_resized], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
     
-        x1_pad = F.pad(x1, (0, 0, 0, 0, x.shape[2]-x1.shape[2], 0))
-        x = torch.cat([x, x1_pad], dim=1)
+        x1_resized = F.interpolate(x1, size=x.size()[2:], mode='nearest')
+        x = torch.cat([x, x1_resized], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
 
         return x
+
 
 
 
