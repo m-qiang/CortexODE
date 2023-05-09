@@ -36,9 +36,8 @@ class Unet(nn.Module):
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
         
     def forward(self, x):
-
         x1 = F.leaky_relu(self.conv1(x), 0.2)
-        x2 = F.leaky_relu(self.conv2(x1), 0.2)
+        x2 = self.act(self.conv2(x1))
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
         x = F.leaky_relu(self.conv5(x4), 0.2)
@@ -71,6 +70,7 @@ class Unet(nn.Module):
         x = self.lastconv2(x)
 
         return x
+
 
 
 
