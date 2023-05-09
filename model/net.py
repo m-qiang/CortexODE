@@ -42,39 +42,30 @@ class Unet(nn.Module):
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
         
     def forward(self, x):
-
         x1 = F.leaky_relu(self.conv1(x), 0.2)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
-
-    # Add padding to ensure spatial dimensions match
-        x = F.pad(x, (0, 1, 0, 1))
         x  = self.up(x)
 
-        x = torch.cat([x, x4], dim=1)
+        x4_padded = F.pad(x4, [0, 0, 0, 0, 1, 2], mode='constant', value=0)
+        x = torch.cat([x, x4_padded], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
-
-    # Add padding to ensure spatial dimensions match
-        x = F.pad(x, (0, 1, 0, 1))
         x = self.up(x)
 
-        x = torch.cat([x, x3], dim=1)
+        x3_padded = F.pad(x3, [0, 0, 1, 1, 1, 1], mode='constant', value=0)
+        x = torch.cat([x, x3_padded], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
-
-    # Add padding to ensure spatial dimensions match
-        x = F.pad(x, (0, 1, 0, 1))
         x = self.up(x)
 
-        x = torch.cat([x, x2], dim=1)
+        x2_padded = F.pad(x2, [0, 0, 1, 1, 2, 1], mode='constant', value=0)
+        x = torch.cat([x, x2_padded], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
-
-    # Add padding to ensure spatial dimensions match
-        x = F.pad(x, (0, 1, 0, 1))
         x = self.up(x)
 
-        x = torch.cat([x, x1], dim=1)
+        x1_padded = F.pad(x1, [0, 0, 1, 1, 2, 1], mode='constant', value=0)
+        x = torch.cat([x, x1_padded], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
