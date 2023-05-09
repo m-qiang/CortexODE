@@ -4,7 +4,6 @@ import torch.nn.functional as F
 import numpy as np
 
 
-
 # segmentation U-Net
 class Unet(nn.Module):
     def __init__(self, c_in=1, c_out=2):
@@ -36,7 +35,6 @@ class Unet(nn.Module):
                                    stride=1, padding=1)
         self.up = nn.Upsample(scale_factor=2, mode='trilinear')
         
-        """
     def forward(self, x):
 
         x1 = F.leaky_relu(self.conv1(x), 0.2)
@@ -45,100 +43,19 @@ class Unet(nn.Module):
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
         x  = self.up(x)
-
-    # Check the shapes of the tensors before concatenation
-        print('x shape:', x.shape)
-        print('x4 shape:', x4.shape)
-
-    # Resize x4 to have the same number of channels as x
-        x4 = F.interpolate(x4, size=x.shape[2:], mode='nearest')
-
-    # Concatenate x and x4 tensors
-        x = torch.cat([x, x4], dim=1)
-
-        x = F.leaky_relu(self.deconv4(x), 0.2)
-        x = self.up(x)
-
-    # Check the shapes of the tensors before concatenation
-        print('x shape:', x.shape)
-        print('x3 shape:', x3.shape)
-
-    # Resize x3 to have the same number of channels as x
-        x3 = F.interpolate(x3, size=x.shape[2:], mode='nearest')
-
-    # Concatenate x and x3 tensors
-        x = torch.cat([x, x3], dim=1)
-
-        x = F.leaky_relu(self.deconv3(x), 0.2)
-        x = self.up(x)
-
-    # Check the shapes of the tensors before concatenation
-        print('x shape:', x.shape)
-        print('x2 shape:', x2.shape)
-    
-    # Resize x2 to have the same number of channels as x
-        x2 = F.interpolate(x2, size=x.shape[2:], mode='nearest')
-
-    # Concatenate x and x2 tensors
-        x = torch.cat([x, x2], dim=1)
-
-        x = F.leaky_relu(self.deconv2(x), 0.2)
-        x = self.up(x)
-
-    # Check the shapes of the tensors before concatenation
-        print('x shape:', x.shape)
-        print('x1 shape:', x1.shape)
-
-    # Resize x1 to have the same number of channels as x
-        x1 = F.interpolate(x1, size=x.shape[2:], mode='nearest')
-
-    # Concatenate x and x1 tensors
-        x = torch.cat([x, x1], dim=1)
-
-        x = F.leaky_relu(self.deconv1(x), 0.2)
-
-        x = F.leaky_relu(self.lastconv1(x), 0.2)
-        x = self.lastconv2(x)
-            
-        return x
-
-
-
-
-
-
-   """ 
-
-    def forward(self, x):
-
-        x1 = F.leaky_relu(self.conv1(x), 0.2)
-        print("Taille du tenseur x1: ", x1.size())
-        x2 = F.leaky_relu(self.conv2(x1), 0.2)
-        print("Taille du tenseur x2: ", x2.size())
-        x3 = F.leaky_relu(self.conv3(x2), 0.2)
-        print("Taille du tenseur x3: ", x3.size())
-        x4 = F.leaky_relu(self.conv4(x3), 0.2)
-        print("Taille du tenseur x4: ", x4.size())
-        x  = F.leaky_relu(self.conv5(x4), 0.2)
-        print("Taille du tenseur x: ", x.size())
-        x  = self.up(x)
-    
-        x4 = F.interpolate(x4, size=x.size()[2:], mode='trilinear', align_corners=True)
+        
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
-
-        x3 = F.interpolate(x3, size=x.size()[2:], mode='trilinear', align_corners=True)
+        
         x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
         x = self.up(x)
-
-        x2 = F.interpolate(x2, size=x.size()[2:], mode='trilinear', align_corners=True)
+        
         x = torch.cat([x, x2], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
-
-        x1 = F.interpolate(x1, size=x.size()[2:], mode='trilinear', align_corners=True)
+        
         x = torch.cat([x, x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
@@ -151,6 +68,7 @@ class Unet(nn.Module):
 class CortexODE(nn.Module):
     """
     The deformation network of CortexODE model.
+
     dim_in: input dimension
     dim_h (C): hidden dimension
     kernel_size (K): size of convolutional kernels
