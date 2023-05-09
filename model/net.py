@@ -4,12 +4,6 @@ import torch.nn.functional as F
 import numpy as np
 
 
- 
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
 # segmentation U-Net
 class Unet(nn.Module):
     def __init__(self, c_in=1, c_out=2):
@@ -48,33 +42,29 @@ class Unet(nn.Module):
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
         x  = self.up(x)
-
-        x4_padded = F.pad(x4, [0, 0, 0, 0, 1, 2], mode='constant', value=0)
-        x = torch.cat([x, x4_padded], dim=1)
+    
+        x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
         x = self.up(x)
-
-        x3_padded = F.pad(x3, [0, 0, 1, 1, 1, 1], mode='constant', value=0)
-        x = torch.cat([x, x3_padded], dim=1)
+    
+        x3_pad = F.pad(x3, (0, 0, 0, 0, x.shape[2]-x3.shape[2], 0))
+        x = torch.cat([x, x3_pad], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
         x = self.up(x)
-
-        x2_padded = F.pad(x2, [0, 0, 1, 1, 2, 1], mode='constant', value=0)
-        x = torch.cat([x, x2_padded], dim=1)
+    
+        x2_pad = F.pad(x2, (0, 0, 0, 0, x.shape[2]-x2.shape[2], 0))
+        x = torch.cat([x, x2_pad], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
         x = self.up(x)
-
-        x1_padded = F.pad(x1, [0, 0, 1, 1, 2, 1], mode='constant', value=0)
-        x = torch.cat([x, x1_padded], dim=1)
+    
+        x1_pad = F.pad(x1, (0, 0, 0, 0, x.shape[2]-x1.shape[2], 0))
+        x = torch.cat([x, x1_pad], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
 
         return x
-
-
-
 
 
 
