@@ -4,39 +4,28 @@ import torch.nn.functional as F
 import numpy as np
 
 
-# segmentation U-Net
-class Unet(nn.Module):
-    def __init__(self, c_in=1, c_out=2):
-        super(Unet, self).__init__()
+ 
 
-        self.conv1 = nn.Conv3d(in_channels=c_in, out_channels=16, kernel_size=3,
-                               stride=1, padding=1)
-        self.conv2 = nn.Conv3d(in_channels=16, out_channels=32, kernel_size=3,
-                               stride=2, padding=1)
-        self.conv3 = nn.Conv3d(in_channels=32, out_channels=64, kernel_size=3,
-                               stride=2, padding=1)
-        self.conv4 = nn.Conv3d(in_channels=64, out_channels=128, kernel_size=3,
-                               stride=2, padding=1)
-        self.conv5 = nn.Conv3d(in_channels=128, out_channels=128, kernel_size=3,
-                               stride=2, padding=1)
+class SegNet(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(SegNet, self).__init__()
 
-        self.deconv4 = nn.Conv3d(in_channels=256, out_channels=64, kernel_size=3,
-                               stride=1, padding=1)
-        self.deconv3 = nn.Conv3d(in_channels=128, out_channels=32, kernel_size=3,
-                               stride=1, padding=1)
-        self.deconv2 = nn.Conv3d(in_channels=64, out_channels=16, kernel_size=3,
-                               stride=1, padding=1)
-        self.deconv1 = nn.Conv3d(in_channels=32, out_channels=16, kernel_size=3,
-                               stride=1, padding=1)
-        
-        self.lastconv1 = nn.Conv3d(in_channels=16, out_channels=16, kernel_size=3,
-                                   stride=1, padding=1)
-        self.lastconv2 = nn.Conv3d(in_channels=16, out_channels=c_out, kernel_size=3,
-                                   stride=1, padding=1)
-        self.up = nn.Upsample(scale_factor=2, mode='trilinear')
-        
+        self.conv1 = nn.Conv3d(in_channels, 16, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv3d(16, 32, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv3d(32, 64, kernel_size=3, padding=1)
+        self.conv4 = nn.Conv3d(64, 128, kernel_size=3, padding=1)
+        self.conv5 = nn.Conv3d(128, 128, kernel_size=3, padding=1)
+
+        self.deconv4 = nn.Conv3d(256, 128, kernel_size=3, padding=1)
+        self.deconv3 = nn.Conv3d(192, 64, kernel_size=3, padding=1)
+        self.deconv2 = nn.Conv3d(96, 32, kernel_size=3, padding=1)
+        self.deconv1 = nn.Conv3d(48, 16, kernel_size=3, padding=1)
+        self.lastconv1 = nn.Conv3d(16, 16, kernel_size=3, padding=1)
+        self.lastconv2 = nn.Conv3d(16, out_channels, kernel_size=1)
+
+        self.up = nn.Upsample(scale_factor=2, mode='trilinear', align_corners=True)
+
     def forward(self, x):
-
         x1 = F.leaky_relu(self.conv1(x), 0.2)
         print("taille x1",x1.shape)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
@@ -47,28 +36,26 @@ class Unet(nn.Module):
         print("taille x4",x4.shape)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
         print("taille x",x.shape)
-        x  = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
+        x  = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
         print("taille x up ",x.shape)
         
-        x = torch.cat([x, F.interpolate(x4, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
+        x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
-        x = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
         
-        x = torch.cat([x, F.interpolate(x3, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
+        x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
-        x = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
-    
-        x = torch.cat([x, F.interpolate(x2, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
+        
+        x = torch.cat([x, x2], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
-        x = self.up(x, scale_factor=2, mode='trilinear', align_corners=True)
-    
-        x = torch.cat([x, F.interpolate(x1, scale_factor=2, mode='trilinear', align_corners=True)], dim=1)
+        x = F.interpolate(x, scale_factor=2, mode='trilinear', align_corners=True)
+        
+        x = torch.cat([x, x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
-        x = F.leaky_relu(self.lastconv1(x), 0.2)
-        x = self.lastconv2(x)
+        x = F.leaky
 
-        return x
 
 
 
