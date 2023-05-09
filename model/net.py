@@ -48,20 +48,32 @@ class Unet(nn.Module):
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
+
+    # Add padding to ensure spatial dimensions match
+        x = F.pad(x, (0, 1, 0, 1))
         x  = self.up(x)
-        
+
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
+
+    # Add padding to ensure spatial dimensions match
+        x = F.pad(x, (0, 1, 0, 1))
         x = self.up(x)
-        
+
         x = torch.cat([x, x3], dim=1)
         x = F.leaky_relu(self.deconv3(x), 0.2)
+
+    # Add padding to ensure spatial dimensions match
+        x = F.pad(x, (0, 1, 0, 1))
         x = self.up(x)
-        
+
         x = torch.cat([x, x2], dim=1)
         x = F.leaky_relu(self.deconv2(x), 0.2)
+
+    # Add padding to ensure spatial dimensions match
+        x = F.pad(x, (0, 1, 0, 1))
         x = self.up(x)
-        
+
         x = torch.cat([x, x1], dim=1)
         x = F.leaky_relu(self.deconv1(x), 0.2)
 
@@ -69,6 +81,7 @@ class Unet(nn.Module):
         x = self.lastconv2(x)
 
         return x
+
 
 
 
