@@ -38,11 +38,17 @@ class Unet(nn.Module):
     def forward(self, x):
 
         x1 = F.leaky_relu(self.conv1(x), 0.2)
+        print("taille x1",x1.size)
         x2 = F.leaky_relu(self.conv2(x1), 0.2)
+        print("taille x2",x2.size)
         x3 = F.leaky_relu(self.conv3(x2), 0.2)
+        print("taille x3",x3.size)
         x4 = F.leaky_relu(self.conv4(x3), 0.2)
+        print("taille x4",x4.size)
         x  = F.leaky_relu(self.conv5(x4), 0.2)
+        print("taille x",x.size)
         x  = self.up(x)
+        print("taille x up ",x.size)
         
         x = torch.cat([x, x4], dim=1)
         x = F.leaky_relu(self.deconv4(x), 0.2)
