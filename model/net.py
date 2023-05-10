@@ -98,8 +98,8 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-        plt.imshow(x)
-        #print(x.shape)    
+        #plt.imshow(x)
+        print(x.shape)    
         return x
 
 
