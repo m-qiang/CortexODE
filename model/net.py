@@ -51,6 +51,7 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
+        return x
 """
 # segmentation U-Net
 class Unet(nn.Module):
