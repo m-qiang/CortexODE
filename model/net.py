@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 # segmentation U-Net
@@ -97,8 +98,10 @@ class Unet(nn.Module):
 
         x = F.leaky_relu(self.lastconv1(x), 0.2)
         x = self.lastconv2(x)
-            
+        plt.imshow(x)
+        print(x.shape)    
         return x
+
 
 
 
