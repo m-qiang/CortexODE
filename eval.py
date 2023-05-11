@@ -270,7 +270,30 @@ if __name__ == '__main__':
             sif_wm_all.append(0)
             sif_gm_all.append(0)
 
+
+
+# ------- report the final results ------- 
+    if test_type == 'eval':
+        with open('results.txt', 'w') as file:
+            file.write('======== wm ========\n')
+            file.write('assd mean: {}\n'.format(np.mean(assd_wm_all)))
+            file.write('assd std: {}\n'.format(np.std(assd_wm_all)))
+            file.write('hd mean: {}\n'.format(np.mean(hd_wm_all)))
+            file.write('hd std: {}\n'.format(np.std(hd_wm_all)))
+            file.write('sif mean: {}\n'.format(np.mean(sif_wm_all)))
+            file.write('sif std: {}\n'.format(np.std(sif_wm_all)))
+            file.write('======== gm ========\n')
+            file.write('assd mean: {}\n'.format(np.mean(assd_gm_all)))
+            file.write('assd std: {}\n'.format(np.std(assd_gm_all)))
+            file.write('hd mean: {}\n'.format(np.mean(hd_gm_all)))
+            file.write('hd std: {}\n'.format(np.std(hd_gm_all)))
+            file.write('sif mean: {}\n'.format(np.mean(sif_gm_all)))
+            file.write('sif std: {}\n'.format(np.std(sif_gm_all)))
+
+        print('Results saved to "results.txt"')
+
     # ------- report the final results ------- 
+"""
     if test_type == 'eval':
         print('======== wm ========')
         print('assd mean:', np.mean(assd_wm_all))
@@ -286,3 +309,6 @@ if __name__ == '__main__':
         print('hd std:', np.std(hd_gm_all))
         print('sif mean:', np.mean(sif_gm_all))
         print('sif std:', np.std(sif_gm_all))
+       
+"""   # ------- report the final results ------- 
+ 
