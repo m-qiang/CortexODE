@@ -274,7 +274,7 @@ if __name__ == '__main__':
 
 # ------- report the final results ------- 
     if test_type == 'eval':
-        with open('results.txt', 'w') as file:
+        with open('metrics.txt', 'w') as file:
             file.write('======== wm ========\n')
             file.write('assd mean: {}\n'.format(np.mean(assd_wm_all)))
             file.write('assd std: {}\n'.format(np.std(assd_wm_all)))
