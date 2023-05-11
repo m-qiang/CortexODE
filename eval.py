@@ -274,6 +274,8 @@ if __name__ == '__main__':
 
 # ------- report the final results ------- 
     if test_type == 'eval':
+        result_file = '/scratch/saiterrami/results/results.txt'
+
         with open('metrics.txt', 'w') as file:
             file.write('======== wm ========\n')
             file.write('assd mean: {}\n'.format(np.mean(assd_wm_all)))
