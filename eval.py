@@ -152,10 +152,10 @@ if __name__ == '__main__':
             seg_pred = torch.argmax(seg_out, dim=1)[0]
             if surf_hemi == 'lh':
                 seg = (seg_pred==1).cpu().numpy()  # lh
-                nib.save(init_dir+'.nii.gz')
+                nib.save(seg+'.nii.gz')
             elif surf_hemi == 'rh':
                 seg = (seg_pred==2).cpu().numpy()  # rh
-                nib.save(init_dir+'.nii.gz')
+                
 
         # ------- extract initial surface ------- 
         v_in, f_in = seg2surf(seg, data_name, sigma=0.5,
