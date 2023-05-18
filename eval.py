@@ -152,8 +152,10 @@ if __name__ == '__main__':
             seg_pred = torch.argmax(seg_out, dim=1)[0]
             if surf_hemi == 'lh':
                 seg = (seg_pred == 1).cpu().numpy()  # lh
-                seg = seg[:, 2:-2, :, :]  # Remove padding
+                seg = seg[2:-2, :, :]  # Remove padding
                 seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
+                print(seg_img.shape)
+
                 nib.save(seg_img, 'lh_segmentation.nii.gz')
 
                 
