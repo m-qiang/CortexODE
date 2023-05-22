@@ -164,6 +164,12 @@ if __name__ == '__main__':
                 
             elif surf_hemi == 'rh':
                 seg = (seg_pred==2).cpu().numpy()  # rh
+                seg = seg[2:-2, :, :]  # Remove padding
+                seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
+                print(seg_img.shape)
+
+                nib.save(seg_img, 'rh_segmentation.nii.gz')
+
       
 
 
