@@ -18,6 +18,7 @@ from util.mesh import laplacian_smooth, compute_normal, compute_mesh_distance, c
 from util.tca import topology
 from model.net import CortexODE, Unet
 from config import load_config
+import time
 
 # initialize topology correction
 topo_correct = topology()
@@ -147,18 +148,27 @@ if __name__ == '__main__':
         volume_in = torch.Tensor(brain_arr).unsqueeze(0).to(device)
 
         # ------- predict segmentation ------- 
+            
+
+
+        
+
         with torch.no_grad():
             seg_out = segnet(volume_in)
             seg_pred = torch.argmax(seg_out, dim=1)[0]
+            counter = 1  # Initialize the counter
             if surf_hemi == 'lh':
                 seg = (seg_pred == 1).cpu().numpy()  # lh
                 seg = seg[2:-2, :, :]  # Remove padding
                 seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
-                print(seg_img.shape)
-
-                nib.save(seg_img, 'lh_segmentation.nii.gz')
-
-                
+        
+        # Generate the file name with counter
+                file_name = f'lh_segmentation{counter}.nii.gz'
+        
+                nib.save(seg_img, file_name)  # Save predicted segmentation
+        
+                counter += 1  # Increment the counter for the next segmentation
+               
                 
             
                 
@@ -168,12 +178,23 @@ if __name__ == '__main__':
                 seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
                 print(seg_img.shape)
 
-                nib.save(seg_img, 'rh_segmentation.nii.gz')
+                nib.save(seg_img, 'rh_segmentation.nii.gz') #save predicted segmentation
 
       
 
 
-        # ------ save predicted segmentation ------
+        """      with torch.no_grad():
+                    seg_out = segnet(volume_in)
+                    seg_pred = torch.argmax(seg_out, dim=1)[0]
+                    if surf_hemi == 'lh':
+                        seg = (seg_pred == 1).cpu().numpy()  # lh
+                        seg = seg[2:-2, :, :]  # Remove padding
+                        seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
+                        print(seg_img.shape)
+
+                        ##nib.save(seg_img, 'lh_segmentation.nii.gz')#save predicted segmentation
+                        # Generate a unique file name using timestamp
+        """   
         
                 
                 
