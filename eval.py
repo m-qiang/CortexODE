@@ -134,8 +134,58 @@ if __name__ == '__main__':
 
     for i in tqdm(range(len(subject_list))):
         subid = subject_list[i]
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        with torch.no_grad():
+            seg_out = segnet(volume_in)
+            seg_pred = torch.argmax(seg_out, dim=1)[0]
+            counter = 1  # Initialize the counter
+    
+        if surf_hemi == 'lh':
+            seg = (seg_pred == 1).cpu().numpy()  # lh
+            seg = seg[2:-2, :, :]  # Remove padding
+        
+        # Load the brain MRI volume to get the correct affine
+        if data_name == 'hcp' or data_name == 'adni':
+            brain = nib.load(data_dir + subid + '/mri/orig.mgz')
+        elif data_name == 'dhcp':
+            brain = nib.load(data_dir + subid + '/' + subid + '_T2w.nii.gz')
+        
+        # Get the affine from the brain MRI volume
+        brain_affine = brain.affine
+        
+        # Create a new Nifti image for segmentation with the brain MRI affine
+        seg_img = nib.Nifti1Image(seg.astype(np.uint8), affine=brain_affine)
+        
+        # Generate the file name with counter
+        file_name = f'lh_segmentation{counter}.nii.gz'
+        
+        nib.save(seg_img, file_name)  # Save predicted segmentation
+        
+        counter += 1  # Increment the counter for the next segmentation
 
+
+
+
+
+
+
+
+"""
         # ------- load brain MRI ------- 
+        
+    
         if data_name == 'hcp' or data_name == 'adni':
             brain = nib.load(data_dir+subid+'/mri/orig.mgz')
             brain_arr = brain.get_fdata()
@@ -149,6 +199,12 @@ if __name__ == '__main__':
 
         # ------- predict segmentation ------- 
             
+
+
+
+
+
+
 
 
         
@@ -180,7 +236,7 @@ if __name__ == '__main__':
 
                 nib.save(seg_img, 'rh_segmentation.nii.gz') #save predicted segmentation
 
-      
+"""     
 
 
         """      with torch.no_grad():
