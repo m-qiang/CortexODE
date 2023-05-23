@@ -160,7 +160,7 @@ if __name__ == '__main__':
             if surf_hemi == 'lh':
                 seg = (seg_pred == 1).cpu().numpy()  # lh
                 seg = seg[2:-2, :, :]  # Remove padding
-                seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
+                seg_img = nib.Nifti1Image(seg.astype(np.uint8), affine=None)
         
         # Generate the file name with counter
                 file_name = f'lh_segmentation{counter}.nii.gz'
