@@ -170,9 +170,10 @@ if __name__ == '__main__':
             scaled_brain_arr = (brain_arr - min_value) * scaling_factor + desired_min
 
     # Convert the voxel intensities to the desired data type
-            scaled_brain_arr = scaled_brain_arr.astype(np.float16)
+            brain_arr = scaled_brain_arr
+            brain_arr = brain_arr.astype(np.float16)
 
-        brain_arr = process_volume(scaled_brain_arr, data_name)
+        brain_arr = process_volume(brain_arr, data_name)
         volume_in = torch.Tensor(brain_arr).unsqueeze(0).to(device)
     
             
