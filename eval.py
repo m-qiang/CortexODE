@@ -151,27 +151,30 @@ if __name__ == '__main__':
             
             
             
-            #Calculate the range of voxel intensities
+        elif data_name == 'dhcp':
+            brain = nib.load(data_dir + subid + '/' + subid + '_T2w.nii.gz')
+            brain_arr = brain.get_fdata()
+
+    # Calculate the range of voxel intensities
             min_value = np.min(brain_arr)
-            print(min_value)
-
             max_value = np.max(brain_arr)
-            print(max_value)
 
-            # Define the desired range for voxel intensities
+    # Define the desired range for voxel intensities
             desired_min = 0  # Update with your desired minimum intensity value
-            desired_max = 255  # Update with your desired maximum intensity value
+            desired_max = 3300  # Update with your desired maximum intensity value
 
-            # Calculate the scaling factor
+    # Calculate the scaling factor
             scaling_factor = (desired_max - desired_min) / (max_value - min_value)
-            print(scaling_factor)
 
-# Scale the voxel intensities
+    # Scale the voxel intensities
             scaled_brain_arr = (brain_arr - min_value) * scaling_factor + desired_min
 
-# Convert the voxel intensities to the desired data type
-            scaled_brain_arr = brain_arr
-            brain_arr = (brain_arr ).astype(np.float16)
+    # Convert the voxel intensities to the desired data type
+            scaled_brain_arr = scaled_brain_arr.astype(np.float16)
+
+        brain_arr = process_volume(scaled_brain_arr, data_name)
+        volume_in = torch.Tensor(brain_arr).unsqueeze(0).to(device)
+    
             
             
             
@@ -179,8 +182,8 @@ if __name__ == '__main__':
             
             
             #brain_arr = (brain_arr /20).astype(np.float16)
-        brain_arr = process_volume(brain_arr, data_name)
-        volume_in = torch.Tensor(brain_arr).unsqueeze(0).to(device)
+        #brain_arr = process_volume(brain_arr, data_name)
+        #volume_in = torch.Tensor(brain_arr).unsqueeze(0).to(device)
 
         # ------- predict segmentation ------- 
             
