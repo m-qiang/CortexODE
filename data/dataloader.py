@@ -169,7 +169,7 @@ def load_surf_data(config, data_usage='train'):
         elif data_name == 'dhcp':
             brain = nib.load(data_dir+subid+'/'+subid+'_T2w.nii.gz')
             brain_arr = brain.get_fdata()
-            brain_arr = (brain_arr / 1000).astype(np.float16)
+            brain_arr = (brain_arr / 700.).astype(np.float16)
         brain_arr = process_volume(brain_arr, data_name)
         
         # ------- wm surface reconstruction ------- 
