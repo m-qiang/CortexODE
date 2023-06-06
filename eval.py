@@ -18,6 +18,7 @@ from util.mesh import laplacian_smooth, compute_normal, compute_mesh_distance, c
 from util.tca import topology
 from model.net import CortexODE, Unet
 from config import load_config
+import time
 
 # initialize topology correction
 topo_correct = topology()
@@ -139,21 +140,88 @@ if __name__ == '__main__':
             brain = nib.load(data_dir+subid+'/mri/orig.mgz')
             brain_arr = brain.get_fdata()
             brain_arr = (brain_arr / 255.).astype(np.float32)
+            
+            
+            
+            
         elif data_name == 'dhcp':
             brain = nib.load(data_dir+subid+'/'+subid+'_T2w.nii.gz')
+            
             brain_arr = brain.get_fdata()
-            brain_arr = (brain_arr / 20).astype(np.float16)
+            brain_arr = (brain_arr / 1500.).astype(np.float16)
         brain_arr = process_volume(brain_arr, data_name)
         volume_in = torch.Tensor(brain_arr).unsqueeze(0).to(device)
+            
+            
+            
+            
+            #min_value = np.min(brain_arr)
+            #max_value = np.max(brain_arr)
+
+# Define the desired range for voxel intensities
+            #desired_min = 0  # Update with your desired minimum intensity value
+            #desired_max = 255  # Update with your desired maximum intensity value
+
+# Calculate the scaling factor
+            #scaling_factor = (desired_max - desired_min) / (max_value - min_value)
+            
+            
+            
+            #brain_arr = (((brain_arr - min_value) * scaling_factor + desired_min).astype(np.float16))
+            
 
         # ------- predict segmentation ------- 
+            
+
+
+            
+
         with torch.no_grad():
             seg_out = segnet(volume_in)
             seg_pred = torch.argmax(seg_out, dim=1)[0]
+            counter = 1  # Initialize the counter
             if surf_hemi == 'lh':
-                seg = (seg_pred==1).cpu().numpy()  # lh
+                seg = (seg_pred == 1).cpu().numpy()  # lh
+                seg = seg[2:-2, :, :]  # Remove padding
+                
+                seg_img = nib.Nifti1Image(seg.astype(np.uint8), brain.affine)
+        
+        # Generate the file name with counter
+                file_name = f'lh_segmentation{counter}.nii.gz'
+        
+                nib.save(seg_img, file_name)  # Save predicted segmentation
+        
+                counter += 1  # Increment the counter for the next segmentation
+               
+                
+            
+                
             elif surf_hemi == 'rh':
                 seg = (seg_pred==2).cpu().numpy()  # rh
+                seg = seg[2:-2, :, :]  # Remove padding
+                seg_img = nib.Nifti1Image(seg.astype(np.uint8), brain.affine)
+                print(seg_img.shape)
+
+                nib.save(seg_img, 'rh_segmentation.nii.gz') #save predicted segmentation
+
+      
+
+
+        """      with torch.no_grad():
+                    seg_out = segnet(volume_in)
+                    seg_pred = torch.argmax(seg_out, dim=1)[0]
+                    if surf_hemi == 'lh':
+                        seg = (seg_pred == 1).cpu().numpy()  # lh
+                        seg = seg[2:-2, :, :]  # Remove padding
+                        seg_img = nib.Nifti1Image(seg.astype(np.uint8), np.eye(4))
+                        print(seg_img.shape)
+
+                        ##nib.save(seg_img, 'lh_segmentation.nii.gz')#save predicted segmentation
+                        # Generate a unique file name using timestamp
+        """   
+        
+                
+                
 
         # ------- extract initial surface ------- 
         v_in, f_in = seg2surf(seg, data_name, sigma=0.5,
@@ -198,10 +266,10 @@ if __name__ == '__main__':
         # ------- save predictde surfaces ------- 
         if test_type == 'pred':
             ### save mesh to .obj or .stl format by Trimesh
-            # mesh_wm = trimesh.Trimesh(v_wm_pred, f_wm_pred)
-            # mesh_gm = trimesh.Trimesh(v_gm_pred, f_gm_pred)
-            # mesh_wm.export(result_dir+'wm_'+data_name+'_'+surf_hemi+'_'+subid+'.stl')
-            # mesh_gm.export(result_dir+'gm_'+data_name+'_'+surf_hemi+'_'+subid+'.obj')
+            #mesh_wm = trimesh.Trimesh(v_wm_pred, f_wm_pred)
+            #mesh_gm = trimesh.Trimesh(v_gm_pred, f_gm_pred)
+            #mesh_wm.export(result_dir+'wm_'+data_name+'_'+surf_hemi+'_'+subid+'.stl')
+            #mesh_gm.export(result_dir+'gm_'+data_name+'_'+surf_hemi+'_'+subid+'.obj')
 
             # save the surfaces in FreeSurfer format
             nib.freesurfer.io.write_geometry(result_dir+data_name+'_'+surf_hemi+'_'+subid+'.white',
@@ -253,10 +321,10 @@ if __name__ == '__main__':
             assd_wm, hd_wm = compute_mesh_distance(v_wm_pred, v_wm_gt, f_wm_pred, f_wm_gt)
             assd_gm, hd_gm = compute_mesh_distance(v_gm_pred, v_gm_gt, f_gm_pred, f_gm_gt)
             if data_name == 'dhcp':  # the resolution is 0.7
-                assd_wm = 0.7*assd_wm
-                assd_gm = 0.7*assd_gm
-                hd_wm = 0.7*hd_wm
-                hd_gm = 0.7*hd_gm
+                assd_wm = 0.5*assd_wm
+                assd_gm = 0.5*assd_gm
+                hd_wm = 0.5*hd_wm
+                hd_gm = 0.5*hd_gm
             assd_wm_all.append(assd_wm)
             assd_gm_all.append(assd_gm)
             hd_wm_all.append(hd_wm)
@@ -270,7 +338,32 @@ if __name__ == '__main__':
             sif_wm_all.append(0)
             sif_gm_all.append(0)
 
+
+
+# ------- report the final results ------- 
+    if test_type == 'eval':
+        result_file = '/scratch/saiterrami/results/results.txt'
+
+        with open('metrics.txt', 'w') as file:
+            file.write('======== wm ========\n')
+            file.write('assd mean: {}\n'.format(np.mean(assd_wm_all)))
+            file.write('assd std: {}\n'.format(np.std(assd_wm_all)))
+            file.write('hd mean: {}\n'.format(np.mean(hd_wm_all)))
+            file.write('hd std: {}\n'.format(np.std(hd_wm_all)))
+            file.write('sif mean: {}\n'.format(np.mean(sif_wm_all)))
+            file.write('sif std: {}\n'.format(np.std(sif_wm_all)))
+            file.write('======== gm ========\n')
+            file.write('assd mean: {}\n'.format(np.mean(assd_gm_all)))
+            file.write('assd std: {}\n'.format(np.std(assd_gm_all)))
+            file.write('hd mean: {}\n'.format(np.mean(hd_gm_all)))
+            file.write('hd std: {}\n'.format(np.std(hd_gm_all)))
+            file.write('sif mean: {}\n'.format(np.mean(sif_gm_all)))
+            file.write('sif std: {}\n'.format(np.std(sif_gm_all)))
+
+        print('Results saved to "results.txt"')
+
     # ------- report the final results ------- 
+"""
     if test_type == 'eval':
         print('======== wm ========')
         print('assd mean:', np.mean(assd_wm_all))
@@ -286,3 +379,6 @@ if __name__ == '__main__':
         print('hd std:', np.std(hd_gm_all))
         print('sif mean:', np.mean(sif_gm_all))
         print('sif std:', np.std(sif_gm_all))
+       
+"""   # ------- report the final results ------- 
+ 
